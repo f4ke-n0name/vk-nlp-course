@@ -5,7 +5,7 @@ from torch import Tensor
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
-#from scripts.model import Model
+from scripts.model import Model
 
 
 class Trainer:
