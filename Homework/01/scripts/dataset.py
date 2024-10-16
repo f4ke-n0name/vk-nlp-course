@@ -1,7 +1,7 @@
 from typing import List, Optional
 from tqdm import tqdm
 from torch.utils.data import Dataset
-from scripts.tokenizer import ByteTokenizer
+#from scripts.tokenizer import ByteTokenizer
 
 
 class MyDataset(Dataset):
@@ -45,8 +45,10 @@ class MyDataset(Dataset):
         self.max_length = max_length
         self.data = []
         for text in tqdm(texts):
+            token_ids = [257] #bos
             # Получаем список токенов (номеров) для данного текста и добавляем к началу и концу спецтокены bos, eos (см. пример)
-            token_ids = <YOUR CODE HERE>
+            token_ids += tokenizer.encode(text)
+            token_ids += [258] #eos
             self.data.append(token_ids)
 
     def __getitem__(self, idx: int) -> List[int]:
@@ -63,8 +65,9 @@ class MyDataset(Dataset):
         List[int]
             Усеченный список номеров токенов
         """
-        return <YOUR CODE HERE>
+        #my
+        return self.data[idx][:self.max_length]
 
     def __len__(self) -> int:
         """Возвращает количество текстов в наборе данных."""
-        return <YOUR CODE HERE>
+        return len(self.data)
