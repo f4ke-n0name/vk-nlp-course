@@ -1,7 +1,7 @@
 from typing import List, Optional
 from tqdm import tqdm
 from torch.utils.data import Dataset
-#from scripts.tokenizer import ByteTokenizer
+from scripts.tokenizer import ByteTokenizer
 
 
 class MyDataset(Dataset):
