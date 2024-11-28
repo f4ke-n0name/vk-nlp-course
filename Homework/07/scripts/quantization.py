@@ -55,7 +55,7 @@ def zeropoint_quantization(x: Tensor) -> Tuple[float, int, CharTensor]:
     x_q = x.round().char()
 
     if x.min() != x.max():
-        s = 255 / (x_max - x_min)
+        s = 255 / (x.max() - x.min())
         z = -(s * x_min).round() - 128
         x_q = (s * x + z).round()
     
