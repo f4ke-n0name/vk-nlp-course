@@ -26,9 +26,9 @@ class LoraLayer(Module):
             r (int): Ранг адаптивных слоев, то есть промежуточная размерность.
         """
         super().__init__()
-        self.A = Linear(<ВАШ КОД>, bias=False)
-        self.B = Linear(<ВАШ КОД>, bias=False)
-        self.B.weight.data = <ВАШ КОД>
+        self.A = Linear(in_features, r, bias=False)
+        self.B = Linear(out_features, r, bias=False)
+        self.B.weight.data = torch.zeros(out_features, r)
 
     def forward(self, x: Tensor):
         """
