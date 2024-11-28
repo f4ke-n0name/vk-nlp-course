@@ -18,7 +18,7 @@ def absmax_quantization(x: Tensor) -> Tuple[float, CharTensor]:
     s = 1.0
     if x.abs().max() != 0:
         s = 127.0 / x.abs().max()
-    x_q = (s*x).round().clamp(-128, 127.char()
+    x_q = (s*x).round().clamp(-128, 127).char()
     return s, x_q
 
 
