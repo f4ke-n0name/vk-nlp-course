@@ -96,7 +96,9 @@ class Trainer:
         Возвращает:
             Tensor: Значение потерь.
         """
-        return <YOUR CODE HERE>
+        logits = logits.view(-1, logits.size(-1))
+        y = y.view(-1)
+        return self.loss_func(logits, y)
 
     def train(self) -> None:
         """
@@ -110,8 +112,9 @@ class Trainer:
                 iterations += 1
                 self.model.train()
                 # Готовим входы (текущие токены) и выходы (следующие токены)
-                x = <YOUR CODE HERE>
-                y = <YOUR CODE HERE>
+                x = ids[:, :-1] 
+                y = ids[:, 1:]
+                print(x,y)
                 # Получаем логиты и считаем лосс
                 logits, _ = self.model(x)
                 loss = self.calc_loss(logits, y)
@@ -134,11 +137,12 @@ class Trainer:
         total_loss = 0.0
         for ids in self.eval_loader:
             # Готовим входы (текущие номера токенов) и выходы (следующие номера токенов)
-            x = <YOUR CODE HERE>
-            y = <YOUR CODE HERE>
+            x = ids[:, :-1] 
+            y = ids[:, 1:]
             with (torch.no_grad()):
                 # Получаем логиты и считаем лосс
                 logits, _ = self.model(x)
                 loss = self.calc_loss(logits, y)
                 total_loss += loss.item() / len(self.eval_loader)
         return total_loss
+
