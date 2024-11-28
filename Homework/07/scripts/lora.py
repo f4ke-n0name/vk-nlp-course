@@ -42,7 +42,8 @@ class LoraLayer(Module):
         Возвращает:
             Tensor: Тензор с размерностью `out_features` после прохождения через слои A и B.
         """
-        return <ВАШ КОД>
+        result = self.B(self.A(x))
+        return result 
 
     def load(self, a_weights: Tensor, b_weights: Tensor) -> None:
         """
@@ -66,5 +67,5 @@ def merge(linear_layer: Linear, lora_layer: LoraLayer) -> None:
         linear_layer (Linear): Основной линейный слой, к которому добавляются адаптивные параметры.
         lora_layer (LoraLayer): LoraLayer, веса которого объединяются с основным линейным слоем.
     """
-    delta = <ВАШ КОД>
+    delta = torch.mm(lora_layer.B.weight.data, lora_layer.A.weight.data)
     linear_layer.weight.data += delta
