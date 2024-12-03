@@ -97,7 +97,7 @@ class Trainer:
             Tensor: Значение потерь.
         """
         logits = logits.view(-1, logits.size(-1))
-        y = y.view(-1)
+        y = y.reshape(-1)
         return self.loss_func(logits, y)
 
     def train(self) -> None:
@@ -114,7 +114,6 @@ class Trainer:
                 # Готовим входы (текущие токены) и выходы (следующие токены)
                 x = ids[:, :-1] 
                 y = ids[:, 1:]
-                print(x,y)
                 # Получаем логиты и считаем лосс
                 logits, _ = self.model(x)
                 loss = self.calc_loss(logits, y)
