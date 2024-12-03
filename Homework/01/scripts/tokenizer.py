@@ -145,12 +145,13 @@ def count_pairs(data: List[List[int]]) -> Dict[Tuple[int, int], int]:
     {(1, 2): 2, (2, 3): 2, (3, 4): 1, (2, 2): 1}
     """
     Dict = {}
-    for i in data:
-        for j in range(1, len(i)):
-            if tuple([i[j], i[j+1]]) in Dict:
-                Dict[(i[j], i[j+1])] += 1
+    for row in data:
+        for i in range(1, len(row)):
+            x, y = row[i - 1], row[i]
+            if (x, y) in ans:
+                Dict[(x, y)] += 1
             else:
-                Dict[(i[j], i[j+1])] = 1
+                Dict[(x, y)] = 1
     return Dict
 
 def merge(numbers: List[int], pair: Tuple[int, int], idx: int) -> List[int]:
