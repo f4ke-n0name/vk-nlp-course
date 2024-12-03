@@ -148,7 +148,7 @@ def count_pairs(data: List[List[int]]) -> Dict[Tuple[int, int], int]:
     for row in data:
         for i in range(1, len(row)):
             x, y = row[i - 1], row[i]
-            if (x, y) in ans:
+            if (x, y) in Dict:
                 Dict[(x, y)] += 1
             else:
                 Dict[(x, y)] = 1
