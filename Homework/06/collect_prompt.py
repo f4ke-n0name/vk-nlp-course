@@ -40,7 +40,7 @@ def create_prompt_with_examples(sample: dict, examples: list, add_full_example: 
        question = example.get('question', '')
        subject = example.get('subject', '')
        choices = example.get('choices', [])
-       answer_index = i.get('answer')
+       answer_index = example.get('answer')
 
        prompt += f"The following are multiple choice questions (with answers) about {subject}.\n{question}\n"
        for i in range(len(answers)):
