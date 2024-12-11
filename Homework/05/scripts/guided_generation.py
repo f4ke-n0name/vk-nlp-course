@@ -38,4 +38,4 @@ def generate_with_reward_guidance(
             results.append(result)
     best_result_idx = torch.argmax(torch.tensor(results))
     best_reward = results[best_result_idx]
-    return best_reward
+    return best_sample, best_reward
