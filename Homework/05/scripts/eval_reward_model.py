@@ -34,7 +34,7 @@ def eval_reward_model(reward_model, reward_tokenizer, test_dataset, target_label
     assert len(chosen_reviews) == len(rejected_reviews)
 
     accuracy = 0
-    with torch.no_grad():
+    with no_grad():
         for chosen_text, rejected_text in zip(chosen_reviews, rejected_reviews):
             if reward_model is None or reward_tokenizer is None:
                 if chosen_text.isnumeric() and rejected_text.isnumeric():
