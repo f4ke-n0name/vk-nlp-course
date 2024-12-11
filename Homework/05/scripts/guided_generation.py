@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def generate_with_reward_guidance(
         main_model, main_tokenizer,
         reward_model, reward_tokenizer,
@@ -22,7 +25,17 @@ def generate_with_reward_guidance(
     Returns:
     str: The generated text sample with the highest reward score.
     """
-
-    # <YOUR CODE HERE>
-
-    raise NotImplementedError
+    samples = []
+    for i in range(N):
+        inputs = main_tokenizer(" ", return_tensors='pt')["input_ids"]
+        generated_candidate = main_model.generate(inputs, max_new_tokens=50)
+        generated = main_tokenizer.decode(generated_candidate[0])
+        samples.append(generated)
+    results = []
+    with torch.no_grad():
+        for sample in samples:
+            result = compute_reward(reward_model, reward_tokenizer, [sample], device=device)
+            results.append(result.item())
+    best_result_idx = torch.argmax(torch.tensor(results))
+    best_reward = results[best_result_idx]
+    return best_reward
