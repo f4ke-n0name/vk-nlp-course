@@ -19,7 +19,7 @@ def compute_reward(reward_model, reward_tokenizer, texts: list[str], device='cpu
     tensor([ 5.1836, -4.8438], device='cpu')
     """
     if reward_model is None or reward_tokenizer is None:
-        return torch.tensor([np.random.uniform(0, 1) for _ in texts])
+        return torch.tensor([np.random.uniform(0, 1) for _ in texts], device=device)
 
     tokenized_ids = reward_tokenizer(texts, return_tensors="pt")
     input_ids = {k: v.to(device) for k,v in tokenized_ids.items()}
