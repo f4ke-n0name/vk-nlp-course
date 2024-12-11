@@ -1,7 +1,7 @@
 from torch.utils.data import Dataset
 
 class IMDBPairwiseDataset(Dataset):
-    """ 
+    """
     A dataset of all possible pairs of chosen and rejected texts for TRL reward training format.
 
     This dataset is designed to facilitate the training of a reward model by providing pairs of
@@ -20,7 +20,7 @@ class IMDBPairwiseDataset(Dataset):
     __getitem__(index): Returns a dictionary containing tokenized inputs for a specific pair of chosen
                         and rejected texts.
     """
-    
+
     def __init__(self, imdb, tokenizer, accepted_label):
         super().__init__()
         self.tokenizer = tokenizer
@@ -39,13 +39,22 @@ class IMDBPairwiseDataset(Dataset):
         return len(self.chosen_texts) * len(self.rejected_texts)
 
     def __getitem__(self, index: int):
+        if index < 0:
+            index += len(self)
+
         chosen_text = self.chosen_texts[index // len(self.rejected_texts)]
         rejected_text = self.rejected_texts[index % len(self.rejected_texts)]
-        tokenized_chosen = self.tokenizer(chosen_text, padding="max_length", max_length=32, truncation=True)
-        tokenized_rejected = self.tokenizer(rejected_text, padding="max_length", max_length=32, truncation=True)
+        tokenized_chosen = self.tokenizer(chosen_text, padding="max_length", max_length=None, truncation=True)
+        tokenized_rejected = self.tokenizer(rejected_text, padding="max_length", max_length=None, truncation=True)
+
+        input_ids_chosen = [id for id in tokenized_chosen["input_ids"] if id != 0]
+        attention_mask_chosen = [1 if id != 0 else 0 for id in tokenized_chosen["input_ids"]]
+
+        input_ids_rejected = [id for id in tokenized_rejected["input_ids"] if id != 0]
+        attention_mask_rejected = [1 if id != 0 else 0 for id in tokenized_rejected["input_ids"]]
         return dict(
-            input_ids_chosen = tokenized_chosen["input_ids"],
-            attention_mask_chosen = tokenized_chosen["attention_mask"],
-            input_ids_rejected = tokenized_rejected["input_ids"],
-            attention_mask_rejected = tokenized_rejected["attention_mask"]
+            input_ids_chosen = input_ids_chosen,
+            attention_mask_chosen = attention_mask_chosen,
+            input_ids_rejected = input_ids_rejected,
+            attention_mask_rejected = attention_mask_rejected
         )
