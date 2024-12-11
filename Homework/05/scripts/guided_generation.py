@@ -1,5 +1,5 @@
 import numpy as np
-
+import torch
 
 def generate_with_reward_guidance(
         main_model, main_tokenizer,
