@@ -34,8 +34,8 @@ def generate_with_reward_guidance(
     results = []
     with torch.no_grad():
         for sample in samples:
-            result = compute_reward(reward_model, reward_tokenizer, [sample])
-            results.append(result.item())
+            result = compute_reward(reward_model, reward_tokenizer, [sample]).item()
+            results.append(result)
     best_result_idx = torch.argmax(torch.tensor(results))
     best_reward = results[best_result_idx]
-    return best_reward.item()
+    return best_reward
