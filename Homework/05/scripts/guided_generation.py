@@ -29,7 +29,7 @@ def generate_with_reward_guidance(
     for i in range(N):
         inputs = main_tokenizer(" ", return_tensors='pt')["input_ids"]
         generated_candidate = main_model.generate(inputs, max_new_tokens=50)
-        generated = main_tokenizer.decode(generated_candidate[0])
+        generated = main_tokenizer.decode(generated_candidate[0].flatten().cpu().numpy().tolist())
         samples.append(generated)
     results = []
     with torch.no_grad():
@@ -38,4 +38,4 @@ def generate_with_reward_guidance(
             results.append(result)
     best_result_idx = torch.argmax(torch.tensor(results))
     best_reward = results[best_result_idx]
-    return best_sample, best_reward
+    return best_reward
