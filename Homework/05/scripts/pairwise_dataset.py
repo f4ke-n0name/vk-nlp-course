@@ -21,6 +21,7 @@ class IMDBPairwiseDataset(Dataset):
                         and rejected texts.
     """
 
+    
     def __init__(self, imdb, tokenizer, accepted_label):
         super().__init__()
         self.tokenizer = tokenizer
