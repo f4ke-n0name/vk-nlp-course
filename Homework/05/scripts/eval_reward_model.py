@@ -2,13 +2,13 @@ from tqdm.auto import tqdm
 
 def eval_reward_model(reward_model, reward_tokenizer, test_dataset, target_label, device='cpu'):
     """
-    Evaluate the performance of a reward model by comparing reward scores for chosen and rejected reviews. 
+    Evaluate the performance of a reward model by comparing reward scores for chosen and rejected reviews.
 
     This function selects reviews from a test dataset based on a target label and evaluates the reward model's
     ability to assign higher scores to chosen reviews compared to rejected ones. The evaluation is performed
     in batches for efficiency.
-    Note that reward scores are compared on corresponding chosen and rejected reviews: 
-        chosen_reviews[0] vs rejected_reviews[0], 
+    Note that reward scores are compared on corresponding chosen and rejected reviews:
+        chosen_reviews[0] vs rejected_reviews[0],
         chosen_reviews[1] vs rejected_reviews[1],
         etc.
 
@@ -28,11 +28,26 @@ def eval_reward_model(reward_model, reward_tokenizer, test_dataset, target_label
     >>> accuracy = eval_reward_model(my_reward_model, my_reward_tokenizer, test_data, target_label=1)
     >>> print(f"Model accuracy: {accuracy:.2%}")
     """
-
-    raise NotImplementedError
-
-    # <YOUR CODE HERE>
+    chosen_reviews = [item["text"] for item in test_dataset if item["label"] == target_label]
+    rejected_reviews = [item["text"] for item in test_dataset if item["label"] != target_label]
 
     assert len(chosen_reviews) == len(rejected_reviews)
 
-    # <YOUR CODE HERE>
+    accuracy = 0
+    with torch.no_grad():
+        for chosen_text, rejected_text in zip(chosen_reviews, rejected_reviews):
+            if reward_model is None or reward_tokenizer is None:
+                if chosen_text.isnumeric() and rejected_text.isnumeric():
+                    reward = [int(chosen_text), int(rejected_text)]
+                else:
+                    reward = [1, 0]
+            else:
+                tokenized_ids = reward_tokenizer([chosen_text, rejected_text], padding=True, truncation=True ,return_tensors="pt")
+                input_ids = {k: v.to(device) for k,v in tokenized_ids.items()}
+                with torch.no_grad():
+                    reward = reward_model(**input_ids).logits[:, 0]
+            if (reward[0] > reward[1]):
+                accuracy += 1
+
+    accuracy = accuracy / len(chosen_reviews)
+    return accuracy
