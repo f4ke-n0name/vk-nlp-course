@@ -145,12 +145,13 @@ def count_pairs(data: List[List[int]]) -> Dict[Tuple[int, int], int]:
     {(1, 2): 2, (2, 3): 2, (3, 4): 1, (2, 2): 1}
     """
     Dict = {}
-    for i in data:
-        for j in range(len(i)-1):
-            if tuple([i[j], i[j+1]]) in Dict:
-                Dict[(i[j], i[j+1])] += 1
+    for row in data:
+        for i in range(1, len(row)):
+            x, y = row[i - 1], row[i]
+            if (x, y) in Dict:
+                Dict[(x, y)] += 1
             else:
-                Dict[(i[j], i[j+1])] = 1
+                Dict[(x, y)] = 1
     return Dict
 
 def merge(numbers: List[int], pair: Tuple[int, int], idx: int) -> List[int]:
@@ -186,20 +187,14 @@ def merge(numbers: List[int], pair: Tuple[int, int], idx: int) -> List[int]:
     >>> merge([0, 0, 0, 1], (0, 0), 2)
     [2, 0, 1]
     """
-    result = []
-    skip = False
-    for i in range(len(numbers) - 1):
-        if skip:
-            skip = False
-            continue
+    i = 0
+    while i < len(numbers) - 1:
         if (numbers[i], numbers[i + 1]) == pair:
-            result.append(idx)
-            skip = True
+            numbers[i] = idx
+            del numbers[i + 1]
         else:
-            result.append(numbers[i])
-    if not skip and len(numbers) > 0:
-        result.append(numbers[-1])
-    return result
+            i += 1
+    return numbers
 
 class BpeTokenizer(ByteTokenizer):
     """
@@ -319,10 +314,13 @@ class BpeTokenizer(ByteTokenizer):
 
         # Последовательно применяем таблицу склеиваний в том порядке, в котором добавлялись токены в словарь
         while len(ids) > 1:
-            print(ids)
             cnt = count_pairs([ids])
-            pair = max(cnt, key=cnt.get)
-            if pair not in self.merges:
+            pair = None
+            for p in self.merges:
+                if p in cnt.keys():
+                    pair = p
+                    break
+            if pair is None:
                 break
             idx = self.merges[pair]
             ids = merge(ids, pair, idx)

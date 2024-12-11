@@ -24,5 +24,5 @@ class Collator:
 
     def __call__(self, data: List[List[int]]) -> Tensor:
         data = [torch.tensor(x, dtype=torch.long) for x in data]
-        data = pad_sequence(data, padding_value=self.padding_value)
-        return data.T
+        data = pad_sequence(data, batch_first=True , padding_value=self.padding_value)
+        return data
