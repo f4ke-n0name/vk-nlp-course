@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 
 def scaled_dot_product_gqa(
     query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, is_causal: bool = True, need_weights: bool = False
@@ -30,7 +29,7 @@ def scaled_dot_product_gqa(
     value = value.repeat_interleave(num_heads // kv_heads, dim=2).permute(0, 2, 1, 3)
     key = key.repeat_interleave(num_heads // kv_heads, dim=2).permute(0, 2, 1, 3)
 
-    scores = (query @ key.transpose(-2, -1)) / np.sqrt(hidden_dim)
+    scores = (query @ key.transpose(-2, -1)) / (hidden_dim ** 0.5)
 
     if is_causal:
         mask = torch.triu(torch.ones(seq_len, kv_seq_len), diagonal=1)
