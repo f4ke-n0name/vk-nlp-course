@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 
 def scaled_dot_product_gqa(
     query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, is_causal: bool = True, need_weights: bool = False
