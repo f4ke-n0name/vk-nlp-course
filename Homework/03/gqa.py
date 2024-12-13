@@ -1,5 +1,5 @@
 import torch
-
+import numpy as np
 
 def scaled_dot_product_gqa(
     query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, is_causal: bool = True, need_weights: bool = False
