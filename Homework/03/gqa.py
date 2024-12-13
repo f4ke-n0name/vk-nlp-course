@@ -20,4 +20,27 @@ def scaled_dot_product_gqa(
             - (Optional) Attention weights with shape [batch size; num heads; seq len; kv seq len].
                 Only returned if 'need_weights' is True.
     """
-    pass
+    batch_size, seq_len, num_heads, hidden_dim = query.shape
+    kv_seq_len, kv_heads = key.shape[1:3]
+
+    if num_heads % kv_heads:
+        raise ValueError('Error')
+
+    query = query.permute(0, 2, 1, 3)
+    value = value.repeat_interleave(num_heads // kv_heads, dim=2).permute(0, 2, 1, 3)
+    key = key.repeat_interleave(num_heads // kv_heads, dim=2).permute(0, 2, 1, 3)
+
+    scores = (query @ key.transpose(-2, -1)) / np.sqrt(hidden_dim)
+
+    if is_causal:
+        mask = torch.triu(torch.ones(seq_len, kv_seq_len), diagonal=1)
+        scores.masked_fill_(mask == 1, float('-inf'))
+
+    weights = F.softmax(scores, dim=-1)
+
+    output = (weights @ value).permute(0, 2, 1, 3)
+
+    if need_weights:
+        return output, weights
+    else:
+        return output
