@@ -16,7 +16,13 @@ def get_valid_tokens(vocab: dict[int, str], eos_token_id: int, fsm: FSM, state: 
     Returns:
         valid tokens (list): list of possible tokens
     """
-    raise NotImplementedError
+    result = []
+    for id_token, token in vocab.items():
+        if fsm.validate_continuation(state, token):
+            result.append(id_token)
+    if fsm.states[state].is_terminal:
+        result.append(eos_token_id)
+    return result
 
 
 def random_generation() -> str:
@@ -26,25 +32,18 @@ def random_generation() -> str:
     Returns:
         generation (str): A binary string with an odd number of zeros.
     """
-    # Define our vocabulary
     vocab = {0: "[EOS]", 1: "0", 2: "1"}
     eos_token_id = 0
-    # Init Finite-State Machine
     fsm, state = build_odd_zeros_fsm()
-
-    # List with generate tokens
     tokens: list[int] = []
-    # Sample until EOS token
     while True:
-        # 1. Get valid tokens
-        valid_tokens = ...
-        # 2. Get next token
-        next_token = ...
+        valid_tokens = get_valid_tokens(vocab, eos_token_id, fsm, state)
+        next_token = random.choice(valid_tokens)
+        if next_token == eos_token_id:
+            break
+        tokens.append(next_token)
+        state = fsm.move(vocab[next_token], state)
 
-        # 3. End generation or move to next iteration
-        ...
-
-    # Convert tokens to string
     return "".join([vocab[it] for it in tokens])
 
 
