@@ -20,17 +20,15 @@ class FSM:
         return self.states[state_id].is_terminal
 
     def move(self, line: str, start: Optional[int] = None) -> Optional[int]:
-        """Iterate over the FSM from the given state using symbols from the line.
-        If no possible transition is found during iteration, return None.
-        If no given state start from initial.
-        
-        Args:
-            line (str): line to iterate via FSM
-            start (optional int): if passed, using as start start
-        Returns:
-            end (optional int): end state if possible, None otherwise
-        """
-        raise NotImplementedError
+        if start is None:
+            start = self.initial
+        next = self.states[start]
+        for state in line:
+            next = next.transitions.get(state, None)
+            if next is None:
+                return None
+        return self.states.index(next)
+
 
     def accept(self, candidate: str) -> bool:
         """Check if the candidate is accepted by the FSM.
@@ -40,7 +38,10 @@ class FSM:
         Returns:
             is_accept (bool): result of checking
         """
-        raise NotImplementedError
+        next = self.move(candidate)
+        if next is not None and self.states[next].is_terminal:
+            return True
+        return False
 
     def validate_continuation(self, state_id: int, continuation: str) -> bool:
         """Check if the continuation can be achieved from the given state.
@@ -51,7 +52,9 @@ class FSM:
         Returns:
             is_possible (bool): result of checking
         """
-        raise NotImplementedError
+        if self.move(continuation, state_id) is not None:
+            return True
+        return False
 
 
 def build_odd_zeros_fsm() -> tuple[FSM, int]:
@@ -66,7 +69,14 @@ def build_odd_zeros_fsm() -> tuple[FSM, int]:
         fsm (FSM): FSM
         start_state (int): index of initial state
     """
-    raise NotImplementedError
+    false_state = State(False)
+    true_state = State(True)
+    false_state.add_transition('0', true_state)
+    false_state.add_transition('1', false_state)
+    true_state.add_transition('0', false_state)
+    true_state.add_transition('1', true_state)
+    fsm = FSM([false_state, true_state], 0)
+    return fsm, 0
 
 
 
